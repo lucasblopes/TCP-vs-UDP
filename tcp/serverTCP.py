@@ -1,13 +1,14 @@
-# server.py
+# serverTCP.py
 import socket
 import struct
 import sys
 import time
 
+
 class TCPServer:
     def __init__(self, host="localhost", port=4000):
         self.host = host
-        self.port = int(sys.argv[1])
+        self.port = port
         self.sock = None
 
     def run(self):
@@ -24,12 +25,13 @@ class TCPServer:
             size_data = conn.recv(16)
             bucket_size_b, cup_size_b = struct.unpack("!QQ", size_data)
 
-            print(f"TCP Server: Recebi que balde tera tam {bucket_size_b} e copo tam {cup_size_b}")
+            print(
+                f"TCP Server: Recebi que balde tera tam {bucket_size_b} e copo tam {cup_size_b}"
+            )
 
-            start_time = time.time();
-
+            start_time = time.time()
             # Enviar mensagem de start
-            conn.send(b'START')
+            conn.send(b"START")
             print("TCP Server: enviei mensagem de start")
 
             # incia com balde vazio
@@ -41,14 +43,18 @@ class TCPServer:
                 if not cup:
                     break
                 bucket += len(cup)
-                print(f"\rTCP Server: Recebidos {bucket}/{bucket_size_b}", end="", flush=True)
+                print(
+                    f"\rTCP Server: Recebidos {bucket}/{bucket_size_b}",
+                    end="",
+                    flush=True,
+                )
 
             end_time = time.time()
 
             print("\nTCP Server: Recebi ultimo chunk!")
             print(f"TCP Server: Recebidos {bucket}/{bucket_size_b} bytes")
             print(f"TCP Server: Tempo: {end_time - start_time}")
-            
+
             conn.close()
 
 
