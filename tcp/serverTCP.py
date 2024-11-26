@@ -44,7 +44,7 @@ class TCPServer:
                     break
                 bucket += len(cup)
                 print(
-                    f"\rTCP Server: Bucket is {bucket//bucket_size_b*100}% filled!",
+                    f"\rTCP Server: Received {bucket}/{bucket_size_b} bytes!",
                     end="",
                     flush=True,
                 )

@@ -49,3 +49,9 @@ Ao receber ENDTX, servidor para de contar o tempo e exibe o resultado
 // Problemas aqui:
 // E se a mensagem de ENDTX se perde? Como nao tem controle de fluxo, ignore isso
 
+
+COMANDOS PARA INTRODUZIR ERROS:
+sudo tc qdisc add dev lo root netem loss 5%
+sudo tc qdisc del dev lo root
+
+
