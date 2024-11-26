@@ -6,33 +6,33 @@ import time
 
 
 class TCPServer:
-    def __init__(self, host="localhost", port=4000):
-        self.host = host
-        self.port = port
+    def __init__(self):
+        self.host = "localhost" 
+        self.port = 4000 
         self.sock = None
 
     def run(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((self.host, self.port))
         self.sock.listen(1)
-        print(f"Servidor TCP aguardando em {self.host}:{self.port}")
+        print(f"TCP Server: listening on {self.host}:{self.port}")
 
         while True:
             conn, addr = self.sock.accept()
-            print(f"TCP Server: Conexão TCP recebida de {addr}")
+            print(f"\nTCP Server: Player joined from {addr}")
 
             # Recebe tamanho do balde e do cop
             size_data = conn.recv(16)
             bucket_size_b, cup_size_b = struct.unpack("!QQ", size_data)
 
             print(
-                f"TCP Server: Recebi que balde tera tam {bucket_size_b} e copo tam {cup_size_b}"
+                f"TCP Server: Player will have to transfer {bucket_size_b}B of water using cup of size {cup_size_b}B"
             )
 
             start_time = time.time()
             # Enviar mensagem de start
             conn.send(b"START")
-            print("TCP Server: enviei mensagem de start")
+            print("TCP Server: Race started! Player pouring water...")
 
             # incia com balde vazio
             bucket = 0
@@ -44,16 +44,15 @@ class TCPServer:
                     break
                 bucket += len(cup)
                 print(
-                    f"\rTCP Server: Recebidos {bucket}/{bucket_size_b}",
+                    f"\rTCP Server: Bucket is {bucket//bucket_size_b*100}% filled!",
                     end="",
                     flush=True,
                 )
 
             end_time = time.time()
 
-            print("\nTCP Server: Recebi ultimo chunk!")
-            print(f"TCP Server: Recebidos {bucket}/{bucket_size_b} bytes")
-            print(f"TCP Server: Tempo: {end_time - start_time}")
+            print("\nTCP Server: Bucket is FULL!")
+            print(f"TCP Server: Player took {end_time - start_time:.3f}s to finish the race")
 
             conn.close()
 

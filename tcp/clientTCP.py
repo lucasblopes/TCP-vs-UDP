@@ -6,13 +6,12 @@ import sys
 
 
 class TCPClient:
-    def __init__(self, host="localhost", port=4000, bucket_size_kb=4096, cup_size_b=64):
-        self.host = host
-        self.port = port
+    def __init__(self, bucket_size_kb, cup_size_b):
+        self.host = "localhost"
+        self.port = 4000
         self.sock = None
-        self.bucket_size_kb = (
-            bucket_size_kb  # Tamanho do conjunto de dados transferidos
-        )
+        self.bucket_size_kb = bucket_size_kb  # Tamanho do conjunto de dados transferidos
+        
         self.cup_size_b = cup_size_b  # Tamanho do chunk para transferência
 
     # Abrir socket e conectar
@@ -35,13 +34,13 @@ class TCPClient:
 
         # Envia tamanho balde e copo
         self.sock.send(struct.pack("!QQ", bucket_size_b, self.cup_size_b))
-        print("TCP Client: Enviei tamanho do balde e do copo")
+        print(f"TCP Client: Ready to play! Sending bucket size: {bucket_size_b}B and cup size: {self.cup_size_b}B to the server ")
 
         # Esperar mensagem de start
         start_message = self.sock.recv(1024).decode()
 
         if start_message == "START":
-            print("TCP Client: Recebi mensagem de start, inicando transmissao")
+            print("TCP Client: Race started! Pouring water...")
             # Enviar dados em chunks
             sent = 0
             while sent < bucket_size_b:
@@ -49,25 +48,23 @@ class TCPClient:
                 self.sock.send(cup)
                 sent += len(cup)
                 print(
-                    f"\rTCP Client: Enviados {sent}/{bucket_size_b}", end="", flush=True
+                    f"\rTCP Client: Transfered {sent}/{bucket_size_b} bytes", end="", flush=True
                 )
 
-            print("\nTCP Client: Transferência TCP concluída")
+            print("\nTCP Client: Done! Server Bucket should be full!")
 
 
 if __name__ == "__main__":
-    # TODO: validar linha de comando
-    #
-    # if len(sys.argv) != 3:
-    #     print("Uso: python clientTCP.py <tamBalde (kb)> <tamCopo (b)>")
-    #     sys.exit(1)
-    #
-    # bucket_size_kb = sys.argv[1]
-    # cup_size_b = sys.argv[2]
-    #
-    # client = TCPClient(bucket_size_kb, cup_size_b)
-    client = TCPClient()
+    if len(sys.argv) != 3:
+        print("Usage: python clientTCP.py <bucket_size (kb)> <cup_size (b)>")
+        sys.exit(1)
+   
+    bucket_size_kb = int(sys.argv[1])
+    cup_size_b = int(sys.argv[2])
+    
+    client = TCPClient(bucket_size_kb, cup_size_b)
     client.open_socket()
-    print("TCP Client: Conectado ao servidor")
+    print("TCP Client: Connected to server\n")
     client.transfer_water()
     client.sock.close()
+    print("\nTCP Client: Connection ended")

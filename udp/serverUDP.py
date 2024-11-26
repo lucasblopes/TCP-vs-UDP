@@ -30,21 +30,24 @@ class UDPServerBase(ABC):
         """Method to be implemented by concrete classes"""
         pass
 
-    def _print_transfer_stats(self, bucket, bucket_size_b, start_time):
+    def _print_transfer_stats(self, bucket, bucket_size_b, total_time):
         """Print transfer statistics"""
-        end_time = time.time()
-        print("\nUDP Server: Transfer finished!")
+        print("\nUDP Server: Player has finished the race!")
         print(f"UDP Server: Received {bucket}/{bucket_size_b} bytes")
-        print(f"UDP Server: Success rate: {(bucket/bucket_size_b)*100:.2f}%")
-        print(f"UDP Server: Total time: {end_time - start_time:.3f}s")
+        if bucket == bucket_size_b:
+            print("UDP Server: Player managed to fill 100% of the bucket!")
+        else:
+            print(f"UDP Server: Player spilled water... Bucket only {bucket/bucket_size_b*100}% filled!")
+        print(f"UDP Server: Total time: {total_time:.3f}s")
 
 
 class ReliableUDPServer(UDPServerBase):
     """UDP server with flow control implementation"""
 
-    def __init__(self, host="localhost", port=3000):
-        super().__init__(host, port)
-        self.timeout = 5  # Timeout in seconds for waiting ACK
+    def __init__(self, sock):
+        super().__init__()
+        self.sock = sock
+        self.timeout = 2  # Timeout in seconds for waiting ACK
         self.sock.settimeout(self.timeout)
 
     def send_and_receive_ack(self, data, addr):
@@ -65,19 +68,21 @@ class ReliableUDPServer(UDPServerBase):
                 elif (
                     ack_type == NACK and ack_seq == seq_num
                 ):  # NACK with correct sequence
-                    print(f"NACK received for sequence {seq_num}, resending...")
+                    print(f"NReliable UDP Server: ACK received for sequence {seq_num}, resending...")
                 else:
-                    print(f"Unexpected ACK/NACK for sequence {ack_seq}, resending...")
+                    print(f"Reliable UDP Server: Unexpected ACK/NACK for sequence {ack_seq}, resending...")
             except socket.timeout:
                 print(f"Timeout for sequence {seq_num}, resending...")
 
     def send_ack(self, sequence, addr):
         """Send ACK packet"""
+        print(f"Ack for {sequence}")
         ack = struct.pack("!BQ", ACK, sequence)
         self.sock.sendto(ack, addr)
 
     def send_nack(self, sequence, addr):
         """Send NACK packet"""
+        print(f"Nack for {sequence}")
         nack = struct.pack("!BQ", NACK, sequence)
         self.sock.sendto(nack, addr)
 
@@ -94,76 +99,82 @@ class ReliableUDPServer(UDPServerBase):
         self.send_and_receive_ack(start_message, addr)
         expected_seq += 1
         print(
-            f"Starting transfer. Bucket size: {bucket_size_b}, Cup size: {cup_size_b}"
+            f"UDP Server: Player will have to transfer {bucket_size_b}B of water using cup of size {cup_size_b}B"
         )
 
         while True:
             try:
-                data, _ = self.sock.recvfrom(self.buffer_size)
+                data, _ = self.sock.recvfrom(cup_size_b + 8)
                 seq_num = struct.unpack("!Q", data[:8])[0]
                 payload = data[8:]
 
                 if seq_num == expected_seq:
-                    if payload == struct.pack("!B", ENDTX):  # End of transmission
+                    if (len(payload) == struct.calcsize("!B")) and (payload == struct.pack("!B", ENDTX)):  # End of transmission
+                        end_time = time.time()
                         self.send_ack(seq_num, addr)
                         break
                     bucket += len(payload)
                     expected_seq += 1
                     # Send ACK
                     self.send_ack(seq_num, addr)
-                else:
+                #else:
                     # Send NACK for out-of-order datagram
-                    self.send_nack(seq_num, addr)
+                    #self.send_nack(seq_num, addr)
 
                 print(
-                    f"\rReliable UDP Server: Received {bucket}/{bucket_size_b}",
+                    f"\rUDP Server: Received {bucket}/{bucket_size_b} bytes",
                     end="",
                     flush=True,
                 )
             except Exception as e:
-                print(f"\nError while handling transfer: {e}")
+                print(f"\nReliable UDP Server: Error while handling transfer: {e}")
                 # Something went wrong -> Send NACK
-                self.send_nack(expected_seq, addr)
+                self.send_ack(expected_seq, addr)
 
-        self._print_transfer_stats(bucket, bucket_size_b, start_time)
+        total_time = end_time - start_time
+        self.sock.settimeout(None)
+        self._print_transfer_stats(bucket, bucket_size_b, total_time)
 
 
 class UnreliableUDPServer(UDPServerBase):
     """UDP server without flow control implementation"""
+    def __init__(self, sock):
+        super().__init__()
+        self.sock = sock
 
     def handle_transfer(self, addr, bucket_size_b, cup_size_b):
         """Handle transfer without flow control"""
-        # Send start message
-        self.sock.sendto(struct.pack("!B", START), addr)
+
         print(
-            f"Starting transfer. Bucket size: {bucket_size_b}, Cup size: {cup_size_b}"
+            f"UDP Server: Player will have to transfer {bucket_size_b}B of water using cup of size {cup_size_b}B"
         )
 
-        start_time = time.time()
         bucket = 0
+        end_tx_size = struct.calcsize("!B")
+
+        start_time = time.time()
+
+        # Send start message
+        self.sock.sendto(struct.pack("!B", START), addr)
+        print("UDP Server: Race started! Player pouring water...")
 
         while True:
-            try:
-                data, _ = self.sock.recvfrom(self.buffer_size)
-                # Check for END message
-                if len(data) == struct.calcsize("!B"):
-                    message = struct.unpack("!B", data)[0]
-                    if message == ENDTX:
-                        print("\nReceived ENDTX. Transfer completed.")
-                        break
-
-                # Otherwise, process the received cup
-                bucket += len(data)
-                print(
-                    f"\rUnreliable UDP Server: Received {bucket}/{bucket_size_b}",
-                    end="",
-                    flush=True,
-                )
-            except Exception as e:
-                print(f"\nError while handling transfer: {e}")
+            data, _ = self.sock.recvfrom(cup_size_b)
+            # Check for END message, will identify endtx only via message size to avoid overhead
+            if len(data) == end_tx_size:
+                end_time = time.time()
                 break
 
-        self._print_transfer_stats(bucket, bucket_size_b, start_time)
+            # Otherwise, process the received cup
+            bucket += len(data)
+            print(
+                f"\rUDP Server: Received {bucket}/{bucket_size_b}",
+                end="",
+                flush=True,
+            )
+
+        total_time = end_time - start_time
+        self._print_transfer_stats(bucket, bucket_size_b, total_time)
 
 
 class DynamicUDPServer:
@@ -177,8 +188,7 @@ class DynamicUDPServer:
         self.buffer_size = 65507
 
     def run(self):
-        print(f"Dynamic UDP Server listening on {self.host}:{self.port}")
-        print("Waiting for client configuration...")
+        print(f"UDP Server: server listening on {self.host}:{self.port}")
 
         while True:
             try:
@@ -190,26 +200,23 @@ class DynamicUDPServer:
 
                 # Starts the appropriate server according to the specified flow control
                 if has_flow_control:
-                    print("Client requested reliable transfer (with flow control)")
-                    server = ReliableUDPServer(self.host, self.port)
+                    print(f"UDP Server: Received request for reliable transfer from {addr}\n")
+                    server = ReliableUDPServer(self.sock)
                 else:
-                    print("Client requested unreliable transfer (without flow control)")
-                    server = UnreliableUDPServer(self.host, self.port)
-
-                # Configures the specific server socket
-                server.sock = self.sock
+                    print(f"UDP Server: Received request for unreliable transfer from {addr}\n")
+                    server = UnreliableUDPServer(self.sock)
 
                 # Start the transfer
                 server.handle_transfer(addr, bucket_size_b, cup_size_b)
 
-                print("\nWaiting for next client configuration...")
+                print("\nUDP Server: Waiting for next client ...")
 
             except KeyboardInterrupt:
                 print("\nServer stopped by user.")
                 break
             except Exception as e:
-                print("Waiting for next client configuration...")
-                continue
+               print("UDP Server: Waiting for next client configuration...")
+               continue
 
 
 if __name__ == "__main__":

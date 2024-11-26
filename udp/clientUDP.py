@@ -4,6 +4,7 @@ import os
 import struct
 from abc import ABC, abstractmethod
 import time
+import sys
 
 # Control Types
 START = 0
@@ -21,13 +22,11 @@ class UDPClientBase(ABC):
         port=3000,
         bucket_size_kb=4096,
         cup_size_b=64,
-        use_flow_control=False,
     ):
         self.host = host
         self.port = port
         self.bucket_size_kb = bucket_size_kb
         self.cup_size_b = cup_size_b
-        self.use_flow_control = use_flow_control
         self.sock = None
 
     def open_socket(self):
@@ -48,8 +47,9 @@ class ReliableUDPClient(UDPClientBase):
     """UDP client with flow control implementation"""
 
     def __init__(self, host="localhost", port=3000, bucket_size_kb=4096, cup_size_b=64):
-        super().__init__(host, port, bucket_size_kb, cup_size_b, use_flow_control=True)
-        self.timeout = 5  # Timeout in seconds
+        super().__init__(host, port, bucket_size_kb, cup_size_b)
+        self.timeout = 2  # Timeout in seconds
+        print("Started Reliable UDP Client\n")
 
     def send_and_receive_ack(self, data):
         """
@@ -66,12 +66,13 @@ class ReliableUDPClient(UDPClientBase):
                 ack_type, ack_seq = struct.unpack("!BQ", ack)
 
                 if ack_type == ACK and ack_seq == seq_num:
+                    print(f"ACK received for sequence {seq_num}")
                     return  # Successful ACK
                 elif ack_type == NACK and ack_seq == seq_num:
                     print(f"NACK received for sequence {seq_num}, resending...")
                 elif ack_type == ACK and ack_seq != seq_num:
                     print(
-                        f"ACK received for sequence {ack_seq} (wrong sequence), resending..."
+                        f"ACK received for wrong sequence {ack_seq} (wrong sequence), resending..."
                     )
             except socket.timeout:
                 print(f"Timeout for sequence {seq_num}, resending...")
@@ -102,10 +103,11 @@ class ReliableUDPClient(UDPClientBase):
 
         # Send initial configuration
         config = struct.pack(
-            "!QQQB", seq_num, bucket_size_b, self.cup_size_b, self.use_flow_control
+            "!QQQB", seq_num, bucket_size_b, self.cup_size_b, True 
         )
         self.send_and_receive_ack(config)
         seq_num += 1
+        print(f"UDP Client: Ready to play! Sending bucket size: {bucket_size_b}B and cup size: {self.cup_size_b}B to the server ")
 
         # Receive START message
         if not self.receive_start_message():
@@ -114,7 +116,7 @@ class ReliableUDPClient(UDPClientBase):
             self.send_and_receive_ack(end_message)
             return
 
-        print("Reliable UDP Client: Starting transmission with flow control")
+        print("UDP Client: Starting Race! I'm clumsy... but will be careful not to spill any water")
 
         sent = 0
         while sent < bucket_size_b:
@@ -126,7 +128,7 @@ class ReliableUDPClient(UDPClientBase):
                 sent += len(cup)
                 seq_num += 1
                 print(
-                    f"\rReliable UDP Client: Sent {sent}/{bucket_size_b}",
+                    f"\rReliable UDP Client: Sent {sent}/{bucket_size_b} bytes",
                     end="",
                     flush=True,
                 )
@@ -137,11 +139,14 @@ class ReliableUDPClient(UDPClientBase):
         # Send end message
         end_message = struct.pack("!QB", seq_num, ENDTX)
         self.send_and_receive_ack(end_message)
-        print("\nReliable UDP Client: Transfer completed")
+        print("\nUDP Client: Done! Server's bucket should be full...")
 
 
 class UnreliableUDPClient(UDPClientBase):
     """UDP client without flow control implementation"""
+    def __init__(self, host="localhost", port=3000, bucket_size_kb=4096, cup_size_b=64):
+        super().__init__(host, port, bucket_size_kb, cup_size_b)
+        print("Started Unreliable UDP Client\n")
 
     def transfer_water(self):
         """Transfer data without flow control"""
@@ -151,6 +156,7 @@ class UnreliableUDPClient(UDPClientBase):
         seq_num = 0
         # Send initial configuration
         config = struct.pack("!QQQB", seq_num, bucket_size_b, self.cup_size_b, False)
+        print(f"UDP Client: Ready to play! Sending bucket size: {bucket_size_b}B and cup size: {self.cup_size_b}B to the server ")
         self.sock.sendto(config, (self.host, self.port))
 
         # Wait for START message
@@ -162,7 +168,7 @@ class UnreliableUDPClient(UDPClientBase):
             print("Did not receive START signal. Exiting.")
             return
 
-        print("Unreliable UDP Client: Starting transmission without flow control")
+        print("UDP Client: Starting Race! I'm clumsy... might spill some water on the way")
 
         sent = 0
         while sent < bucket_size_b:
@@ -170,28 +176,27 @@ class UnreliableUDPClient(UDPClientBase):
             self.sock.sendto(cup, (self.host, self.port))
             sent += len(cup)
             print(
-                f"\rUnreliable UDP Client: Sent {sent}/{bucket_size_b}",
+                f"\rUDP Client: Sent {sent}/{bucket_size_b} bytes",
                 end="",
                 flush=True,
             )
 
-        # Send END message
+        # Send END message (GAMBIARRA -> mandar varias vezes para caso perca)
         self.sock.sendto(struct.pack("!B", ENDTX), (self.host, self.port))
-        print("\nUnreliable UDP Client: Transfer completed")
+        self.sock.sendto(struct.pack("!B", ENDTX), (self.host, self.port))
+        self.sock.sendto(struct.pack("!B", ENDTX), (self.host, self.port))
+        self.sock.sendto(struct.pack("!B", ENDTX), (self.host, self.port))
+        print("\nUDP Client: Done! I hope server's bucket is full...")
 
 
 if __name__ == "__main__":
-    # if len(sys.argv) != 4:
-    #     print("Usage: python client.py <bucketSize Kb> <cupSize b> <useFlowControl>")
-    #     sys.exit(1)
-    #
-    # bucket_size_kb = int(sys.argv[1])
-    # cup_size_b = int(sys.argv[2])
-    # use_flow_control = sys.argv[3].lower() in ("true", "1", "t")
-
-    bucket_size_kb = 4096
-    cup_size_b = 64
-    use_flow_control = True
+    if len(sys.argv) != 4:
+        print("Usage: python client.py <bucketSize Kb> <cupSize b> <useFlowControl>")
+        sys.exit(1)
+   
+    bucket_size_kb = int(sys.argv[1])
+    cup_size_b = int(sys.argv[2])
+    use_flow_control = sys.argv[3].lower() in ("true", "1", "t")
 
     client_udp = ReliableUDPClient if use_flow_control else UnreliableUDPClient
     client = client_udp(
