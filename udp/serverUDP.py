@@ -10,11 +10,13 @@ ENDTX = 1
 ACK = 2
 NACK = 3
 
+HOST="h51.c3local"
+PORT=29000
 
 class UDPServerBase(ABC):
     """Base class for UDP servers"""
 
-    def __init__(self, host="localhost", port=3000):
+    def __init__(self, host=HOST, port=PORT):
         self.host = host
         self.port = port
         self.sock = None
@@ -30,16 +32,30 @@ class UDPServerBase(ABC):
         """Method to be implemented by concrete classes"""
         pass
 
-    def _print_transfer_stats(self, bucket, bucket_size_b, total_time):
-        """Print transfer statistics"""
-        print("\nUDP Server: Player has finished the race!")
-        print(f"UDP Server: Received {bucket}/{bucket_size_b} bytes")
-        if bucket == bucket_size_b:
-            print("UDP Server: Player managed to fill 100% of the bucket!")
-        else:
-            print(f"UDP Server: Player spilled water... Bucket only {bucket/bucket_size_b*100}% filled!")
-        print(f"UDP Server: Total time: {total_time:.3f}s")
-
+    def save_transfer_stats(self, bucket, bucket_size_b, total_time, flow_control, client_host, cup_size_b, lost_bytes, received_percentage):
+         """Print transfer statistics and write in the log"""
+         print("\nUDP Server: Player has finished the race!")
+         if bucket == bucket_size_b:
+             print("UDP Server: Player managed to fill 100% of the bucket!")
+         else:
+            print(f"UDP Server: Player spilled water... Bucket only {received_percentage}% filled!")
+         print(f"UDP Server: Total time: {total_time:.3f}s")
+         log_entry = (
+             f"SERVER_HOST: {self.host}\n"
+             f"CLIENT_HOST: {client_host}\n"
+             f"FLOW_CONTROL: {flow_control}\n"
+             f"BUCKET_SIZE: {bucket_size_b}\n"
+             f"CUP_SIZE: {cup_size_b}\n"
+             f"LOST_BYTES: {lost_bytes}\n"
+             f"RECEIVED_PORCENTAGE: {received_percentage:.8f}%\n"
+             f"TOTAL_TIME: {total_time:.3f}s\n"
+         )
+         try:
+            with open("udp-server-log.txt", "a") as log_file:
+                log_file.write(log_entry)
+                log_file.write("="*50 + "\n")  # Separator between logs
+         except Exception as e:
+            print(f"UDP Server: Error writing to log file: {e}")
 
 class ReliableUDPServer(UDPServerBase):
     """UDP server with flow control implementation"""
@@ -133,8 +149,15 @@ class ReliableUDPServer(UDPServerBase):
 
         total_time = end_time - start_time
         self.sock.settimeout(None)
-        self._print_transfer_stats(bucket, bucket_size_b, total_time)
-
+        
+        # Calculate lost bytes and received percentage
+        lost_bytes = bucket_size_b - bucket
+        received_percentage = (bucket / bucket_size_b) * 100
+        
+        # Log transfer stats
+        flow_control = "Enabled"  # This server uses flow control
+        client_host = addr[0]
+        self.save_transfer_stats(bucket, bucket_size_b, total_time, flow_control, client_host, cup_size_b, lost_bytes, received_percentage)
 
 class UnreliableUDPServer(UDPServerBase):
     """UDP server without flow control implementation"""
@@ -174,13 +197,21 @@ class UnreliableUDPServer(UDPServerBase):
             )
 
         total_time = end_time - start_time
-        self._print_transfer_stats(bucket, bucket_size_b, total_time)
+
+        # Calculate lost bytes and received percentage
+        lost_bytes = bucket_size_b - bucket
+        received_percentage = (bucket / bucket_size_b) * 100
+
+        # Log transfer stats
+        flow_control = "Disabled"  # No flow control in this server
+        client_host = addr[0]
+        self.save_transfer_stats(bucket, bucket_size_b, total_time, flow_control, client_host, cup_size_b, lost_bytes, received_percentage)
 
 
 class DynamicUDPServer:
     """Dynamic UDP server that adapts to client's flow control preference"""
 
-    def __init__(self, host="localhost", port=3000):
+    def __init__(self, host=HOST, port=PORT):
         self.host = host
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -188,7 +219,7 @@ class DynamicUDPServer:
         self.buffer_size = 65507
 
     def run(self):
-        print(f"UDP Server: server listening on {self.host}:{self.port}")
+        print(f"UDP Server: listening on {self.host}:{self.port}")
 
         while True:
             try:

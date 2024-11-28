@@ -4,11 +4,14 @@ import os
 import struct
 import sys
 
+HOST="h51.c3local"
+PORT=28000
+NEAGLE_CLARK=False
 
 class TCPClient:
     def __init__(self, bucket_size_kb, cup_size_b):
-        self.host = "localhost"
-        self.port = 4000
+        self.host = HOST
+        self.port = PORT
         self.sock = None
         self.bucket_size_kb = bucket_size_kb  # Tamanho do conjunto de dados transferidos
         
@@ -19,9 +22,8 @@ class TCPClient:
         # talvez fazer validacao se conexao funcionou?
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.host, self.port))
-        self.sock.setsockopt(
-            socket.IPPROTO_TCP, socket.TCP_NODELAY, 1
-        )  # nao deixar tcp esperar "juntar" dados para enviar
+        if (not NEAGLE_CLARK):
+            self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # Desativa as soluções de Neagle/ Clark
 
     # Encher o balde com dados aleatorios
     def fill_bucket(self):

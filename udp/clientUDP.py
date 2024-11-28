@@ -12,14 +12,16 @@ ENDTX = 1
 ACK = 2
 NACK = 3
 
+HOST="h51.c3local"
+PORT=29000
 
 class UDPClientBase(ABC):
     """Base class for UDP clients"""
 
     def __init__(
         self,
-        host="localhost",
-        port=3000,
+        host=HOST,
+        port=PORT,
         bucket_size_kb=4096,
         cup_size_b=64,
     ):
@@ -47,7 +49,7 @@ class UDPClientBase(ABC):
 class ReliableUDPClient(UDPClientBase):
     """UDP client with flow control implementation"""
 
-    def __init__(self, host="localhost", port=3000, bucket_size_kb=4096, cup_size_b=64):
+    def __init__(self, host=HOST, port=PORT, bucket_size_kb=4096, cup_size_b=64):
         super().__init__(host, port, bucket_size_kb, cup_size_b)
         self.timeout = 2
         self.expected_seq = 0
@@ -138,7 +140,7 @@ class ReliableUDPClient(UDPClientBase):
 
 class UnreliableUDPClient(UDPClientBase):
     """UDP client without flow control implementation"""
-    def __init__(self, host="localhost", port=3000, bucket_size_kb=4096, cup_size_b=64):
+    def __init__(self, host=HOST, port=PORT, bucket_size_kb=4096, cup_size_b=64):
         super().__init__(host, port, bucket_size_kb, cup_size_b)
         print("Started Unreliable UDP Client\n")
 
@@ -201,3 +203,5 @@ if __name__ == "__main__":
     client.open_socket()
     client.transfer_water()
     client.sock.close()
+    print("\nUDP Client: Connection ended")
+
