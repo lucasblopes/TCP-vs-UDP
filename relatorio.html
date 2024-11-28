@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Trabalho TCP vs UDP - Redes II</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px 10px 10px 10px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    pre {
+      background-color: #f1f1f1;
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    .log-container {
+      margin-top: 20px;
+    }
+
+    .log-container h3 {
+      color: #333;
+    }
+
+    .log-container pre {
+      margin-top: 10px;
+    }
+
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid black; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .header-row th { text-align: center; }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Relatório de Trabalho TCP vs UDP - Redes II</h1>
+    <h4>Prof. Elias P. Duarte Jr. - Departamento de Informática - UFPR</h3>
+  </header>
+
+  <div class="container">
+    <h2>Dupla</h2>
+    <p>Lucas Gabriel Batista Lopes - GRR20220062</p>
+    <p>Rafel Munhoz da Cunha Marques - GRR20224385</p>
+
+    <h2>Objetivo do Trabalho</h2>
+    <p>O objetivo deste trabalho é comparar o desempenho do protocolo TCP em relação ao protocolo UDP na transferência de dados. Isso será feito por meio da implementação de um cliente e um servidor utilizando ambos os protocolos, e posteriormente, medindo e analisando os resultados obtidos.</p>
+
+    <h2>Implementação</h2>
+    <h3>Código Fonte</h3>
+    <p>O código fonte da implementação do cliente e servidor TCP e UDP está disponível nos arquivos abaixo:</p>
+    <ul>
+      <li><a href="clientTCP.py.txt">clientTCP.py.txt</a></li>
+      <li><a href="serverTCP.py.txt">serverTCP.py.txt</a></li>
+      <li><a href="clientUDP.py.txt">clientUDP.py.txt</a></li>
+      <li><a href="serverUDP.py.txt">serverUDP.py.txt</a></li>
+    </ul>
+
+    <h3>Descrição da Corrida do Balde - TCP vs UDP</h3>
+    <p>A Corrida do Balde é uma simulação onde o objetivo é transferir dados de um "balde cheio" (buffer com dados aleatórios da memória ram) no cliente para um "balde vazio" no servidor, utilizando os protocolos TCP e UDP. A transferência é feita em chunks (tamanhos de copo), e é comparado o tempo que cada protocolo leva para transferir todo o conteúdo do balde.</p>
+
+    <h4>Fluxo TCP</h4>
+    <ul>
+      <li>O servidor inicia e fica em modo de escuta.</li>
+      <li>O cliente inicia, conecta-se ao servidor e informa o tamanho do balde e do copo.</li>
+      <li>O servidor começa a contar o tempo e envia uma mensagem de "start".</li>
+      <li>O cliente começa a enviar os dados em chunks.</li>
+      <li>O servidor, ao receber o último chunk, para de contar o tempo e exibe o resultado.</li>
+    </ul>
+
+    <h4>Fluxo UDP com controle de fluxo</h4>
+    <ul>
+      <li>O servidor inicia e fica em modo de escuta.</li>
+      <li>O cliente envia o tamanho do balde e do copo.</li>
+      <li>O servidor começa a contar o tempo e responde com uma mensagem de "start".</li>
+      <li>O cliente envia os dados em chunks e o servidor responde com um ACK para cada chunk.</li>
+      <li>O servidor, ao receber o último chunk, para de contar o tempo e exibe o resultado.</li>
+    </ul>
+
+    <h4>Fluxo UDP sem controle de fluxo</h4>
+    <ul>
+      <li>O servidor inicia e fica em modo de escuta.</li>
+      <li>O cliente envia o tamanho do balde e do copo.</li>
+      <li>O servidor começa a contar o tempo e responde com uma mensagem de "start".</li>
+      <li>O cliente envia os dados em chunks sem controle de fluxo (sem ACK).</li>
+      <li>O cliente envia uma mensagem de "ENDTX" para indicar o fim da transferência.</li>
+      <li>O servidor, ao receber a mensagem "ENDTX", para de contar o tempo e exibe o resultado.</li>
+    </ul>
+
+    <h3>Detalhes da implementação</h3>
+    <ul>
+      <li>O código foi feito em python 3</li>
+      <li>Um pacote contém o client e server TCP e outro pacote contém o client e server UDP.</li>
+      <li>O cliente UDP determina, passando uma flag na mensagem inicial, se irá utilizar controle de fluxo ou não.</li>
+      <li>O server UDP instancia, assim, um servidor com controle de fluxo ou não, com base na flag da mensagem inicial transmitida pelo client.</li>
+    </ul>
+
+    <h3>Execução</h3>
+    <ul>
+    <li>TCP Server</li>
+    <pre>python3 serverTCP.py</pre>
+    <li>TCP Client</li>
+    <pre>python3 clientTCP.py [bucket_size (kb)] [cup_size (b)]</pre>
+    <li>UDP Server</li>
+    <pre>python3 serverUDP.py</pre>
+    <li>UDP Client</li>
+    <pre>python3 clientUDP.py [bucket_size (kb)] [cup_size (b)] [useFlowControl]</pre>
+    </ul>
+
+    <h3>Logs de Execução</h3>
+    <div class="log-container">
+      <h3>Execução do Cliente e Servidor TCP</h3>
+      <pre>
+        lgbl22@h03:~/code/TCP-vs-UDP/tcp$ p clientTCP.py 100000 100
+        TCP Client: Connected to server
+
+        TCP Client: Ready to play! Sending bucket size: 102400000B and cup size: 100B to the server
+        TCP Client: Race started! Pouring water...
+        TCP Client: Transfered 102400000/102400000 bytes
+        TCP Client: Done! Server Bucket should be full!
+
+        TCP Client: Connection ended
+
+        lgbl22@h47:~/code/TCP-vs-UDP/tcp$ p serverTCP.py
+        TCP Server: listening on h47.c3local:28000
+        TCP Server: Player joined from ('200.17.202.6', 37782)
+
+        TCP Server: Player will have to transfer 102400000B of water using cup of size 100B
+        TCP Server: Race started! Player pouring water...
+        TCP Server: Received 102400000/102400000 bytes!
+        TCP Server: Player has finished the race!
+        TCP Server: Bucket is FULL!
+        TCP Server: Total time: 64.004s
+
+        TCP Server: Waiting for next client ...
+      </pre>
+    </div>
+    <div class="log-container">
+      <h3>Execução do Cliente e Servidor UDP</h3>
+      <pre>
+        lgbl22@h3:~/code/TCP-vs-UDP/udp$ p clientudp.py 300000 1460
+
+        UDP Client: Ready to play! Sending bucket size: 307200000B and cup size: 1460B to the server
+        UDP Client: Starting Race! I'm clumsy... but will be careful not to spill any water
+        UDP Client: Sent 307200000/307200000 bytes
+        UDP Client: Done! Server's bucket should be full...
+
+        UDP Client: Connection ended
+
+        lgbl22@h47:~/code/TCP-vs-UDP/udp$ p serverUDP.py
+
+        UDP Server: Waiting for next client ...
+        UDP Server: Received request for reliable transfer from ('10.254.223.31', 47245)
+
+        UDP Server: Player will have to transfer 307200000B of water using cup of size 1460B
+        UDP Server: Received 307200000/307200000 bytes
+        UDP Server: Player has finished the race!
+        UDP Server: Player managed to fill 100% of the bucket!
+        UDP Server: Total time: 37.854s
+
+        UDP Server: Waiting for next client ...
+      </pre>
+    </div>
+
+    <h3>Arquivos de Logs</h3>
+    <p>Arquivos de logs gerados para testes em TCP com as soluções de Neagle e Clark ligadas e desligadas e UDP com e sem controle de fluxo</p>
+    <p>Testes realizados para valores do tamanho do balde de 100MB, 200MB, 300MB e para os seguintes valores do tamanho do copo: 32B, 730B, 1460B, 5840B. Esses valores de copo foram determinados para explorar como os protocolos se comportam quando o chunk é pequeno (32B), metade do MSS (730B), um MSS (1460) e múltiplos MSS (5840).</p>
+    <p>Para UDP com controle de fluxo, não foi rodado para 200MB/32B e 300MB/32B devido a um tempo exorbitante</p>
+    <ul>
+      <li><a href="udp-server-log.txt">udp-server-log.txt</a></li>
+      <li><a href="tcp-server-log.txt">udp-server-log.txt</a></li>
+    </ul>
+
+    <h2>Testes e Resultados</h2>
+    <h3>Características dos Testes</h3>
+    <ul>
+        <li><strong>Protocolos comparados:</strong> TCP e UDP</li>
+        <li><strong>Tamanhos de balde (BUCKET_SIZE):</strong> 102 MB, 204 MB, 307 MB</li>
+        <li><strong>Tamanhos de chunk (CUP_SIZE):</strong> 32B, 730B, 1460B, 5840B</li>
+        <li><strong>Variações testadas:</strong>
+            <ul>
+                <li>TCP com Neagle-Clark ligado e desligado</li>
+                <li>UDP sem controle de fluxo</li>
+                <li>UDP com controle de fluxo "para e espera"</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>Resultados Obtidos</h3>
+            <table>
+            <thead>
+                <tr class="header-row">
+                    <th rowspan="3">BUCKET_SIZE (MB) / CUP_SIZE (B)</th>
+                    <th colspan="2">TCP</th>
+                    <th colspan="3">UDP Sem Controle de Fluxo</th>
+                    <th colspan="3">UDP Controle de Fluxo</th>
+                </tr>
+                <tr class="header-row">
+                    <th colspan="1">Tempo (Neagle-Clark on)</th>
+                    <th colspan="1">Tempo (Neagle-Clark off)</th>
+                    <th>Tempo</th>
+                    <th>Lost Bytes</th>
+                    <th>Received %</th>
+                    <th>Tempo</th>
+                    <th>Lost Bytes</th>
+                    <th>Received %</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <td>102 / 32</td>
+                    <td>10.296s</td>
+                    <td>10.768s</td>
+                    <td>33.197s</td>
+                    <td>5120</td>
+                    <td>99.99500000%</td>
+                    <td>781.215s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 730</td>
+                    <td>1.048s</td>
+                    <td>1.056s</td>
+                    <td>1.626s</td>
+                    <td>1516210</td>
+                    <td>98.51932617%</td>
+                    <td>33.126s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 1460</td>
+                    <td>1.006s</td>
+                    <td>0.993s</td>
+                    <td>1.016s</td>
+                    <td>1563660</td>
+                    <td>98.47298828%</td>
+                    <td>18.756s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 5840</td>
+                    <td>0.960s</td>
+                    <td>0.935s</td>
+                    <td>0.951s</td>
+                    <td>5840</td>
+                    <td>99.99429688%</td>
+                    <td>5.224s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 32</td>
+                    <td>22.220s</td>
+                    <td>20.414s</td>
+                    <td>68.148s</td>
+                    <td>33186912</td>
+                    <td>83.79545312%</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 730</td>
+                    <td>2.093s</td>
+                    <td>2.106s</td>
+                    <td>2.715s</td>
+                    <td>51717580</td>
+                    <td>74.74727539%</td>
+                    <td>48.396s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 1460</td>
+                    <td>1.995s</td>
+                    <td>1.992s</td>
+                    <td>2.059s</td>
+                    <td>5025320</td>
+                    <td>97.54623047%</td>
+                    <td>25.672s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 5840</td>
+                    <td>1.918s</td>
+                    <td>1.904s</td>
+                    <td>1.951s</td>
+                    <td>43760</td>
+                    <td>99.97863281%</td>
+                    <td>11.190s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 32</td>
+                    <td>33.176s</td>
+                    <td>34.389s</td>
+                    <td>89.536s</td>
+                    <td>165728</td>
+                    <td>99.94605208%</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 730</td>
+                    <td>3.162s</td>
+                    <td>3.149s</td>
+                    <td>4.066s</td>
+                    <td>327040</td>
+                    <td>99.89354167%</td>
+                    <td>72.693s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 1460</td>
+                    <td>2.987s</td>
+                    <td>2.987s</td>
+                    <td>3.162s</td>
+                    <td>248200</td>
+                    <td>99.91920573%</td>
+                    <td>37.854s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 5840</td>
+                    <td>2.850s</td>
+                    <td>2.852s</td>
+                    <td>2.825s</td>
+                    <td>10160</td>
+                    <td>99.99669271%</td>
+                    <td>13.241s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+            </tbody>
+        </table>
+    <h2>Análise Comparativa de Desempenho</h2>
+
+    <h3>1. Integridade da Transferência</h3>
+    <ul>
+        <li><strong>TCP:</strong> <span class="highlight">100%</span> de transferência de dados em todos os cenários.</li>
+        <li><strong>UDP Sem Controle de Fluxo:</strong>
+            <ul>
+                <li>Perdas significativas de bytes.</li>
+                <li>Taxas de recebimento variando entre <span class="highlight">74,75%</span> e <span class="highlight">99,99%</span>.</li>
+            </ul>
+        </li>
+        <li><strong>UDP Com Controle de Fluxo:</strong> <span class="highlight">100%</span> de transferência de dados em todos os cenários testados.</li>
+    </ul>
+
+    <h3>2. Tempos de Transferência</h3>
+    <ul>
+        <li><strong>TCP:</strong>
+            <ul>
+                <li>Tempos com Neagle-Clark ligado/desligado muito próximos.</li>
+                <li>Variação de tempo por tamanho de chunk:
+                    <ul>
+                        <li>32B: 10-34 segundos</li>
+                        <li>730B: 1-3 segundos</li>
+                        <li>1460B: 1-3 segundos</li>
+                        <li>5840B: ~1-3 segundos</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>UDP Sem Controle de Fluxo:</strong>
+            <ul>
+                <li>Tempos significativamente maiores.</li>
+                <li>Variação de 1 a 89 segundos.</li>
+                <li>Maior impacto em chunks menores.</li>
+            </ul>
+        </li>
+        <li><strong>UDP Com Controle de Fluxo:</strong>
+            <ul>
+                <li>Tempos muito variáveis, de 5 a 781 segundos.</li>
+                <li>Dependente do tamanho do chunk.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>3. Impacto do Tamanho do Chunk</h3>
+    <ul>
+        <li><strong>TCP:</strong>
+            <ul>
+                <li>Desempenho consistente.</li>
+                <li>Tempos de transferência diminuem com o aumento do tamanho do chunk.</li>
+                <li>Variação mínima entre Neagle-Clark ligado/desligado.</li>
+            </ul>
+        </li>
+        <li><strong>UDP Sem Controle de Fluxo:</strong>
+            <ul>
+                <li>Maior sensibilidade ao tamanho do chunk.</li>
+                <li>Chunks menores (32B) têm desempenho significativamente pior.</li>
+                <li>Perda de bytes mais alta em chunks intermediários.</li>
+            </ul>
+        </li>
+        <li><strong>UDP Com Controle de Fluxo:</strong>
+            <ul>
+                <li>Estabilização do desempenho.</li>
+                <li>Tempos de transferência reduzidos com chunks maiores.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Conclusões Principais</h2>
+    <h3>Integridade dos Dados</h3>
+    <ul>
+        <li><strong>TCP:</strong> Transferência <span class="highlight">100%</span> garantida.</li>
+        <li><strong>UDP Sem Controle:</strong> Perda parcial de dados.</li>
+        <li><strong>UDP Com Controle:</strong> Transferência <span class="highlight">100%</span> garantida.</li>
+    </ul>
+
+    <h3>Desempenho</h3>
+    <ul>
+        <li><strong>TCP:</strong> Mais rápido e consistente.</li>
+        <li><strong>UDP Sem Controle:</strong> Menos previsível, com maiores variações.</li>
+        <li><strong>UDP Com Controle:</strong> Mais estável, porém com tempos mais longos.</li>
+    </ul>
+
+    <h3>Impacto do Tamanho do Chunk</h3>
+    <ul>
+        <li>Significativo para UDP.</li>
+        <li>Mínimo para TCP.</li>
+        <li>Controle de fluxo mitiga problemas de chunk pequeno no UDP.</li>
+    </ul>
+
+    <p class="note">Nota: Resultados baseados em transferências específicas e nas máquinas do laboratório do dinf (registrado nos arquivos de log)</p>
+
+    <p>Com base nos testes realizados, pode-se concluir que o protocolo TCP apresenta um desempenho superior ao UDP na transferência de dados, especialmente quando são necessárias garantias de entrega e integridade dos dados. Apesar da maior complexidade do TCP, os resultados mostram que seu overhead de controle é compensado por uma taxa de transferência mais alta e maior confiabilidade no processo de transmissão.</p>
+    <p>Além disso, o controle de fluxo implementado no UDP é extremamente simples, o que explica os tempos de execução tão altos. Isso evidencia o excelente trabalho que o TCP faz no controle de congestionamento e no controle de fluxo, algo difícil de implementar manualmente no UDP.</p>
+    <p>Por outro lado, o UDP ainda é uma boa opção em cenários que exigem menor latência e menor consumo de recursos, como aplicações de streaming de áudio/vídeo ou jogos online, onde perdas de pacotes podem ser aceitáveis.</p>
+  </div>
+</body>
+</html>
+

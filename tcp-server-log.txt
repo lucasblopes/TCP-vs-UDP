@@ -1,0 +1,168 @@
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 102400000
+CUP_SIZE: 32
+TOTAL_TIME: 10.768s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 102400000
+CUP_SIZE: 730
+TOTAL_TIME: 1.056s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 102400000
+CUP_SIZE: 1460
+TOTAL_TIME: 0.993s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 102400000
+CUP_SIZE: 5840
+TOTAL_TIME: 0.935s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 102400000
+CUP_SIZE: 32
+TOTAL_TIME: 10.296s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 102400000
+CUP_SIZE: 730
+TOTAL_TIME: 1.048s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 102400000
+CUP_SIZE: 1460
+TOTAL_TIME: 1.006s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 102400000
+CUP_SIZE: 5840
+TOTAL_TIME: 0.960s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 204800000
+CUP_SIZE: 32
+TOTAL_TIME: 20.414s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 204800000
+CUP_SIZE: 730
+TOTAL_TIME: 2.106s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 204800000
+CUP_SIZE: 1460
+TOTAL_TIME: 1.992s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 204800000
+CUP_SIZE: 5840
+TOTAL_TIME: 1.904s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 204800000
+CUP_SIZE: 32
+TOTAL_TIME: 22.220s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 204800000
+CUP_SIZE: 730
+TOTAL_TIME: 2.093s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 204800000
+CUP_SIZE: 1460
+TOTAL_TIME: 1.995s
+==================================================
+SERVER_HOST: h51.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 204800000
+CUP_SIZE: 5840
+TOTAL_TIME: 1.918s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 307200000
+CUP_SIZE: 32
+TOTAL_TIME: 33.176s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 307200000
+CUP_SIZE: 730
+TOTAL_TIME: 3.162s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 307200000
+CUP_SIZE: 1460
+TOTAL_TIME: 2.987s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: True
+BUCKET_SIZE: 307200000
+CUP_SIZE: 5840
+TOTAL_TIME: 2.850s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 307200000
+CUP_SIZE: 32
+TOTAL_TIME: 34.389s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 307200000
+CUP_SIZE: 730
+TOTAL_TIME: 3.149s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 307200000
+CUP_SIZE: 1460
+TOTAL_TIME: 2.987s
+==================================================
+SERVER_HOST: h47.c3local
+CLIENT_HOST: 10.254.223.31
+NEAGLE_CLARK: False
+BUCKET_SIZE: 307200000
+CUP_SIZE: 5840
+TOTAL_TIME: 2.852s
+==================================================

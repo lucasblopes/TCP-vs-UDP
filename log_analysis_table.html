@@ -1,0 +1,184 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Log Analysis</title>
+        <style>
+            table { border-collapse: collapse; width: 100%; }
+            th, td { border: 1px solid black; padding: 8px; text-align: center; }
+            th { background-color: #f2f2f2; }
+            .header-row th { text-align: center; }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr class="header-row">
+                    <th rowspan="3">BUCKET_SIZE (MB) / CUP_SIZE (B)</th>
+                    <th colspan="2">TCP</th>
+                    <th colspan="3">UDP Sem Controle de Fluxo</th>
+                    <th colspan="3">UDP Controle de Fluxo</th>
+                </tr>
+                <tr class="header-row">
+                    <th colspan="1">Tempo (Neagle-Clark on)</th>
+                    <th colspan="1">Tempo (Neagle-Clark off)</th>
+                    <th>Tempo</th>
+                    <th>Lost Bytes</th>
+                    <th>Received %</th>
+                    <th>Tempo</th>
+                    <th>Lost Bytes</th>
+                    <th>Received %</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <td>102 / 32</td>
+                    <td>10.296s</td>
+                    <td>10.768s</td>
+                    <td>33.197s</td>
+                    <td>5120</td>
+                    <td>99.99500000%</td>
+                    <td>781.215s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 730</td>
+                    <td>1.048s</td>
+                    <td>1.056s</td>
+                    <td>1.626s</td>
+                    <td>1516210</td>
+                    <td>98.51932617%</td>
+                    <td>33.126s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 1460</td>
+                    <td>1.006s</td>
+                    <td>0.993s</td>
+                    <td>1.016s</td>
+                    <td>1563660</td>
+                    <td>98.47298828%</td>
+                    <td>18.756s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>102 / 5840</td>
+                    <td>0.960s</td>
+                    <td>0.935s</td>
+                    <td>0.951s</td>
+                    <td>5840</td>
+                    <td>99.99429688%</td>
+                    <td>5.224s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 32</td>
+                    <td>22.220s</td>
+                    <td>20.414s</td>
+                    <td>68.148s</td>
+                    <td>33186912</td>
+                    <td>83.79545312%</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 730</td>
+                    <td>2.093s</td>
+                    <td>2.106s</td>
+                    <td>2.715s</td>
+                    <td>51717580</td>
+                    <td>74.74727539%</td>
+                    <td>48.396s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 1460</td>
+                    <td>1.995s</td>
+                    <td>1.992s</td>
+                    <td>2.059s</td>
+                    <td>5025320</td>
+                    <td>97.54623047%</td>
+                    <td>25.672s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>204 / 5840</td>
+                    <td>1.918s</td>
+                    <td>1.904s</td>
+                    <td>1.951s</td>
+                    <td>43760</td>
+                    <td>99.97863281%</td>
+                    <td>11.190s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 32</td>
+                    <td>33.176s</td>
+                    <td>34.389s</td>
+                    <td>89.536s</td>
+                    <td>165728</td>
+                    <td>99.94605208%</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 730</td>
+                    <td>3.162s</td>
+                    <td>3.149s</td>
+                    <td>4.066s</td>
+                    <td>327040</td>
+                    <td>99.89354167%</td>
+                    <td>72.693s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 1460</td>
+                    <td>2.987s</td>
+                    <td>2.987s</td>
+                    <td>3.162s</td>
+                    <td>248200</td>
+                    <td>99.91920573%</td>
+                    <td>37.854s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>307 / 5840</td>
+                    <td>2.850s</td>
+                    <td>2.852s</td>
+                    <td>2.825s</td>
+                    <td>10160</td>
+                    <td>99.99669271%</td>
+                    <td>13.241s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+            </tbody>
+        </table>
+    </body>
+    </html>
+    

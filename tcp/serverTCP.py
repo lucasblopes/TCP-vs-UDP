@@ -4,7 +4,7 @@ import struct
 import sys
 import time
 
-HOST="h51.c3local"
+HOST="h47.c3local"
 PORT=28000
 NEAGLE_CLARK=False
 
