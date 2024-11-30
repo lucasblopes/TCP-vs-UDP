@@ -190,7 +190,7 @@
     <h3>Arquivos de Logs</h3>
     <p>Arquivos de logs gerados para testes em TCP com as soluções de Neagle e Clark ligadas e desligadas e UDP com e sem controle de fluxo</p>
     <p>Testes realizados para valores do tamanho do balde de 100MB, 200MB, 300MB e para os seguintes valores do tamanho do copo: 32B, 730B, 1460B, 5840B. Esses valores de copo foram determinados para explorar como os protocolos se comportam quando o chunk é pequeno (32B), metade do MSS (730B), um MSS (1460) e múltiplos MSS (5840).</p>
-    <p>Para UDP com controle de fluxo, não foi rodado para 200MB/32B e 300MB/32B devido a um tempo exorbitante</p>
+    <p>Para UDP com controle de fluxo, não foi rodado para valores muito altos do tamanho do balde com tamanho do copo 32 B devido a um tempo exorbitante de espera</p>
     <ul>
       <li><a href="udp-server-log.txt">udp-server-log.txt</a></li>
       <li><a href="tcp-server-log.txt">udp-server-log.txt</a></li>
@@ -200,7 +200,7 @@
     <h3>Características dos Testes</h3>
     <ul>
         <li><strong>Protocolos comparados:</strong> TCP e UDP</li>
-        <li><strong>Tamanhos de balde (BUCKET_SIZE):</strong> 102 MB, 204 MB, 307 MB</li>
+        <li><strong>Tamanhos de balde (BUCKET_SIZE):</strong> 102 MB, 204 MB, 307 MB, 512 MB, 1 GB</li>
         <li><strong>Tamanhos de chunk (CUP_SIZE):</strong> 32B, 730B, 1460B, 5840B</li>
         <li><strong>Variações testadas:</strong>
             <ul>
@@ -212,7 +212,7 @@
     </ul>
 
     <h3>Resultados Obtidos</h3>
-            <table>
+        <table>
             <thead>
                 <tr class="header-row">
                     <th rowspan="3">BUCKET_SIZE (MB) / CUP_SIZE (B)</th>
@@ -288,9 +288,9 @@
                     <td>68.148s</td>
                     <td>33186912</td>
                     <td>83.79545312%</td>
+                    <td>N/As</td>
                     <td>N/A</td>
-                    <td>N/A</td>
-                    <td>N/A</td>
+                    <td>N/A%</td>
                 </tr>
         
                 <tr>
@@ -336,9 +336,9 @@
                     <td>89.536s</td>
                     <td>165728</td>
                     <td>99.94605208%</td>
+                    <td>N/As</td>
                     <td>N/A</td>
-                    <td>N/A</td>
-                    <td>N/A</td>
+                    <td>N/A%</td>
                 </tr>
         
                 <tr>
@@ -377,6 +377,114 @@
                     <td>100.00000000%</td>
                 </tr>
         
+                <tr>
+                    <td>102 / 100</td>
+                    <td>N/As</td>
+                    <td>64.004s</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                </tr>
+        
+                <tr>
+                    <td>512 / 32</td>
+                    <td>60.443s</td>
+                    <td>54.722s</td>
+                    <td>146.101s</td>
+                    <td>4384</td>
+                    <td>99.99914375%</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                </tr>
+        
+                <tr>
+                    <td>512 / 730</td>
+                    <td>5.249s</td>
+                    <td>5.228s</td>
+                    <td>6.536s</td>
+                    <td>304410</td>
+                    <td>99.94054492%</td>
+                    <td>120.120s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>512 / 1460</td>
+                    <td>4.973s</td>
+                    <td>4.976s</td>
+                    <td>5.204s</td>
+                    <td>159140</td>
+                    <td>99.96891797%</td>
+                    <td>61.825s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>512 / 5840</td>
+                    <td>4.809s</td>
+                    <td>4.732s</td>
+                    <td>4.889s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                    <td>23.920s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>1024 / 32</td>
+                    <td>109.256s</td>
+                    <td>119.134s</td>
+                    <td>321.086s</td>
+                    <td>114112</td>
+                    <td>99.98885625%</td>
+                    <td>N/As</td>
+                    <td>N/A</td>
+                    <td>N/A%</td>
+                </tr>
+        
+                <tr>
+                    <td>1024 / 730</td>
+                    <td>10.506s</td>
+                    <td>10.512s</td>
+                    <td>12.745s</td>
+                    <td>134320</td>
+                    <td>99.98688281%</td>
+                    <td>245.667s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>1024 / 1460</td>
+                    <td>9.985s</td>
+                    <td>9.940s</td>
+                    <td>10.424s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                    <td>125.238s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
+                <tr>
+                    <td>1024 / 5840</td>
+                    <td>9.612s</td>
+                    <td>9.431s</td>
+                    <td>9.877s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                    <td>55.566s</td>
+                    <td>0</td>
+                    <td>100.00000000%</td>
+                </tr>
+        
             </tbody>
         </table>
     <h2>Análise Comparativa de Desempenho</h2>
@@ -385,10 +493,7 @@
     <ul>
         <li><strong>TCP:</strong> <span class="highlight">100%</span> de transferência de dados em todos os cenários.</li>
         <li><strong>UDP Sem Controle de Fluxo:</strong>
-            <ul>
-                <li>Perdas significativas de bytes.</li>
-                <li>Taxas de recebimento variando entre <span class="highlight">74,75%</span> e <span class="highlight">99,99%</span>.</li>
-            </ul>
+                Perdas significativas de bytes, sendo a menor taxa de recebimento atingida de <span class="highlight">74,75%</span>.
         </li>
         <li><strong>UDP Com Controle de Fluxo:</strong> <span class="highlight">100%</span> de transferência de dados em todos os cenários testados.</li>
     </ul>
@@ -397,28 +502,21 @@
     <ul>
         <li><strong>TCP:</strong>
             <ul>
-                <li>Tempos com Neagle-Clark ligado/desligado muito próximos.</li>
-                <li>Variação de tempo por tamanho de chunk:
-                    <ul>
-                        <li>32B: 10-34 segundos</li>
-                        <li>730B: 1-3 segundos</li>
-                        <li>1460B: 1-3 segundos</li>
-                        <li>5840B: ~1-3 segundos</li>
-                    </ul>
-                </li>
+                <li>Tempos com Neagle-Clark ligado/desligado muito próximos para os tamanhos de copo >= 730MB, o que já era esperado.</li>
+                <li>Mas para o tamanho do copo de 32B, as soluções de Neagle-Clark se mostraram efetivas, com um ganho de aproximadamente 10s para 1 GB de transferência.</li>
+                <li>Nesss cenário de testes, o TCP foi o que apresentou os menores tempos de transferência.</li>
             </ul>
         </li>
         <li><strong>UDP Sem Controle de Fluxo:</strong>
             <ul>
                 <li>Tempos significativamente maiores.</li>
-                <li>Variação de 1 a 89 segundos.</li>
-                <li>Maior impacto em chunks menores.</li>
+                <li>Maior impacto em chunks menores, chegando em tempos até 3 vezes maiores com relação ao TCP, quando CUP_SIZE = 32 B.</li>
             </ul>
         </li>
         <li><strong>UDP Com Controle de Fluxo:</strong>
             <ul>
-                <li>Tempos muito variáveis, de 5 a 781 segundos.</li>
-                <li>Dependente do tamanho do chunk.</li>
+                <li>Tempos muito maiores, variando de 5 a 781 segundos (para apenas 100 MB).</li>
+                <li>Dependente do tamanho do chunk, alcançando tempos de transferência exorbitantes para CUP_SIZE = 32 B.</li>
             </ul>
         </li>
     </ul>
@@ -429,7 +527,7 @@
             <ul>
                 <li>Desempenho consistente.</li>
                 <li>Tempos de transferência diminuem com o aumento do tamanho do chunk.</li>
-                <li>Variação mínima entre Neagle-Clark ligado/desligado.</li>
+                <li>Para Chunks pequenos, desligar as soluções de Neagle-Clark deixa o protocolo significativamente mais lento.</li>
             </ul>
         </li>
         <li><strong>UDP Sem Controle de Fluxo:</strong>
@@ -457,17 +555,11 @@
 
     <h3>Desempenho</h3>
     <ul>
-        <li><strong>TCP:</strong> Mais rápido e consistente.</li>
-        <li><strong>UDP Sem Controle:</strong> Menos previsível, com maiores variações.</li>
-        <li><strong>UDP Com Controle:</strong> Mais estável, porém com tempos mais longos.</li>
+        <li><strong>TCP:</strong> Mais consistente e, no cenário de testes analisados, com tempos de execução menores, principalmente para pequenos chunks.</li>
+        <li><strong>UDP Sem Controle:</strong> Ocorreram percas de dados significativas (até aproximadamente 26% de perdas) e nos testes realizados o tempo de execução foi maior que o TCP.</li>
+        <li><strong>UDP Com Controle:</strong> Estável, porém com tempos extremamente mais longos, já que o algoritmo para-espera não performa bem.</li>
     </ul>
 
-    <h3>Impacto do Tamanho do Chunk</h3>
-    <ul>
-        <li>Significativo para UDP.</li>
-        <li>Mínimo para TCP.</li>
-        <li>Controle de fluxo mitiga problemas de chunk pequeno no UDP.</li>
-    </ul>
 
     <p class="note">Nota: Resultados baseados em transferências específicas e nas máquinas do laboratório do dinf (registrado nos arquivos de log)</p>
 
